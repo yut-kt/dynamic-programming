@@ -5,6 +5,7 @@ from sys import argv, exit
 from typing import Tuple, List
 from graphviz import Digraph
 
+dict = {'m': 'match', 'i': 'insertion', 'd': 'deletion', 'r': 'replacement'}
 
 def validation_argv() -> None:
     if len(argv) < 3:
@@ -64,7 +65,6 @@ def judge_result(table: List[List[Tuple[int, int, int]]], word1: str, word2: str
 
 
 def print_results(results: List[Tuple[str, str]]) -> None:
-    dict = {'m': '一致', 'i': '挿入', 'd': '削除', 'r': '置換'}
     for result in results:
         print(result[0], ': ', dict[result[1]])
 
@@ -84,16 +84,16 @@ def make_graph(results: List[Tuple[str, str]]) -> None:
         status = result[1]
         if status in ['r', 'm']:
             for name in name_list:
-                graph.edge(name, node_name)
+                graph.edge(name, node_name, label=dict[status])
             name_list = [node_name]
             branch_status = {}
 
         elif status in ['d', 'i']:
             if status in branch_status:
-                graph.edge(branch_status[status], node_name)
+                graph.edge(branch_status[status], node_name, label=dict[status])
                 name_list.remove(branch_status[status])
             else:
-                graph.edge(name_list[0], node_name)
+                graph.edge(name_list[0], node_name, label=dict[status])
 
             name_list.append(node_name)
             branch_status[status] = node_name
